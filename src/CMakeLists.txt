@@ -3,10 +3,14 @@ project(tuner)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -funroll-loops -flto=auto -DNDEBUG -std=c++20 -march=native -mtune=native")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_VERBOSE_MAKEFILE ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads REQUIRED)
 
-add_executable(tuner "main.cpp" "tuner.cpp" "threadpool.cpp" "engines/toy.cpp" "engines/toy_tapered.cpp" "engines/fourku.cpp")
+file(GLOB SRCS "*.cpp" "engines/*.cpp")
+add_executable(tuner ${SRCS})
 
 target_link_libraries(tuner PRIVATE Threads::Threads)
