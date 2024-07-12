@@ -6,10 +6,13 @@ out
 build
 enc_temp_folder
 CMakeFiles
+src/cmake-build-debug/*
+src/cmake-build-release/*
 
 CMakeSettings.json
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+datasets/*
 sources.csv
 src/tuner.exe
