@@ -25,20 +25,18 @@ namespace baryonyx
         trace_type                     tempo{};
     };
 
-    eval_trace trace{};
-
     #define TRACE_INCREMENT(term, color)  trace.term[color]++
     #define TRACE_ADD(term, color, count) trace.term[color] += count
 
-    constexpr std::array game_phase_increments = {0, 1, 1, 2, 4, 0};
-    constexpr int        max_game_phase        = 24;
+    const std::array game_phase_increments = {0, 1, 1, 2, 4, 0};
+    const int        max_game_phase        = 24;
 
-    constexpr piece_table<score> piece_values = {
+    const piece_table<score> piece_values = {
         S(82, 94), S(337, 281), S(365, 297),
         S(477, 512), S(1025, 936), S(0, 0)
     };
 
-    constexpr std::array pawn_table = {
+    const std::array pawn_table = {
         S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0), S(0, 0),
         S(0, 0), S(98, 178), S(134, 173), S(61, 158), S(95, 134), S(68, 147), S(126, 132),
         S(34, 165), S(-11, 187), S(-6, 94), S(7, 100), S(26, 85), S(31, 67), S(65, 56),
@@ -51,7 +49,7 @@ namespace baryonyx
         S(0, 0)
     };
 
-    constexpr std::array knight_table = {
+    const std::array knight_table = {
         S(-167, -58), S(-89, -38), S(-34, -13), S(-49, -28), S(61, -31), S(-97, -27), S(-15, -63),
         S(-107, -99), S(-73, -25), S(-41, -8), S(72, -25), S(36, -2), S(23, -9), S(62, -25),
         S(7, -24), S(-17, -52), S(-47, -24), S(60, -20), S(37, 10), S(65, 9), S(84, -1),
@@ -64,7 +62,7 @@ namespace baryonyx
         S(-23, -64)
     };
 
-    constexpr std::array bishop_table = {
+    const std::array bishop_table = {
         S(-29, -14), S(4, -21), S(-82, -11), S(-37, -8), S(-25, -7), S(-42, -9), S(7, -17),
         S(-8, -24), S(-26, -8), S(16, -4), S(-18, 7), S(-13, -12), S(30, -3), S(59, -13),
         S(18, -4), S(-47, -14), S(-16, 2), S(37, -8), S(43, 0), S(40, -1), S(35, -2),
@@ -77,7 +75,7 @@ namespace baryonyx
         S(-21, -17)
     };
 
-    constexpr std::array rook_table = {
+    const std::array rook_table = {
         S(32, 13), S(42, 10), S(32, 18), S(51, 15), S(63, 12), S(9, 12), S(31, 8), S(43, 5),
         S(27, 11), S(32, 13), S(58, 13), S(62, 11), S(80, -3), S(67, 3), S(26, 8), S(44, 3),
         S(-5, 7), S(19, 7), S(26, 7), S(36, 5), S(17, 4), S(45, -3), S(61, -5), S(16, -3),
@@ -88,7 +86,7 @@ namespace baryonyx
         S(-19, -9), S(-13, 2), S(1, 3), S(17, -1), S(16, -5), S(7, -13), S(-37, 4), S(-26, -20)
     };
 
-    constexpr std::array queen_table = {
+    const std::array queen_table = {
         S(-28, -9), S(0, 22), S(29, 22), S(12, 27), S(59, 27), S(44, 19), S(43, 10),
         S(45, 20), S(-24, -17), S(-39, 20), S(-5, 32), S(1, 41), S(-16, 58), S(57, 25),
         S(28, 30), S(54, 0), S(-13, -20), S(-17, 6), S(7, 9), S(8, 49), S(29, 47),
@@ -101,7 +99,7 @@ namespace baryonyx
         S(-50, -41)
     };
 
-    constexpr std::array king_table = {
+    const std::array king_table = {
         S(-65, -74), S(23, -35), S(16, -18), S(-15, -18), S(-56, -11), S(-34, 15), S(2, 4),
         S(13, -17), S(29, -12), S(-1, 17), S(-20, 14), S(-7, 17), S(-8, 17), S(-4, 38),
         S(-38, 23), S(-29, 11), S(-9, 10), S(24, 17), S(2, 23), S(-16, 15), S(-20, 20),
@@ -114,11 +112,11 @@ namespace baryonyx
         S(14, -43)
     };
 
-    constexpr piece_square_table<score> all_psqt = {
+    const piece_square_table<score> all_psqt = {
         pawn_table, knight_table, bishop_table, rook_table, queen_table, king_table
     };
 
-    constexpr score tempo = S(0, 0);
+    const score tempo = S(0, 0);
 
     int get_game_phase(const position& pos)
     {
@@ -135,7 +133,7 @@ namespace baryonyx
     }
 
     template<color Us>
-    score evaluate_material(const position& pos)
+    score evaluate_material(const position& pos, eval_trace& trace)
     {
         constexpr color them = ~Us;
 
@@ -180,7 +178,7 @@ namespace baryonyx
     }
 
     template<color Us>
-    score evaluate_psqt(const position& pos)
+    score evaluate_psqt(const position& pos, eval_trace& trace)
     {
         constexpr color them = ~Us;
 
@@ -194,39 +192,44 @@ namespace baryonyx
         {
             const auto       sq       = static_cast<square>(our_pieces.pop_lsb());
             const piece_type pt       = utils::piece_to_piece_type(pos.piece_on(sq));
+            const u8         pt_as_u8 = static_cast<u8>(pt);
             const u8         sq_as_u8 = static_cast<u8>(relative_square<Us>(sq));
-            psqt_score += all_psqt[static_cast<u8>(pt)][sq_as_u8];
-            TRACE_INCREMENT(all_psqt[static_cast<u8>(pt)][sq_as_u8], static_cast<u8>(Us));
+            psqt_score += all_psqt[pt_as_u8][sq_as_u8];
+            TRACE_INCREMENT(all_psqt[pt_as_u8][sq_as_u8], static_cast<u8>(Us));
         }
 
         while (!their_pieces.empty())
         {
             const auto       sq       = static_cast<square>(their_pieces.pop_lsb());
             const piece_type pt       = utils::piece_to_piece_type(pos.piece_on(sq));
+            const u8         pt_as_u8 = static_cast<u8>(pt);
             const u8         sq_as_u8 = static_cast<u8>(relative_square<them>(sq));
-            psqt_score -= all_psqt[static_cast<u8>(pt)][sq_as_u8];
-            TRACE_INCREMENT(all_psqt[static_cast<u8>(pt)][sq_as_u8], static_cast<u8>(them));
+            psqt_score -= all_psqt[pt_as_u8][sq_as_u8];
+            TRACE_INCREMENT(all_psqt[pt_as_u8][sq_as_u8], static_cast<u8>(them));
         }
 
         return psqt_score;
     }
 
     template<color Us>
-    score evaluate(const position& pos)
+    eval_trace evaluate(const position& pos)
     {
-        const score total_score = evaluate_material<Us>(pos) + evaluate_psqt<Us>(pos) + tempo;
+        eval_trace  trace{};
+        const score total_score = evaluate_material<Us>(pos, trace) + evaluate_psqt<Us>(pos, trace) + tempo;
         TRACE_INCREMENT(tempo, static_cast<u8>(Us));
 
         const int   game_phase = get_game_phase(pos);
         const score eval = (mg_score(total_score) * game_phase + eg_score(total_score) * (max_game_phase - game_phase))
                            / max_game_phase;
 
-        return eval;
+        trace.score = Us == color::white ? eval : -eval;
+
+        return trace;
     }
 
-    score evaluate(const position& pos)
+    eval_trace evaluate(const position& pos)
     {
-        return pos.side_to_move() == color::white ? evaluate<color::white>(pos) : -evaluate<color::black>(pos);
+        return pos.side_to_move() == color::white ? evaluate<color::white>(pos) : evaluate<color::black>(pos);
     }
 
     static i32 round_value(const tune_t value)
@@ -244,12 +247,12 @@ namespace baryonyx
 
     static void print_single(const parameters_t& parameters, int& index, const std::string& name)
     {
-        std::cout << std::format("constexpr score {} = ", name);
+        std::cout << std::format("constexpr packed_score {} = ", name);
 
         print_parameter(parameters[index]);
         index++;
 
-        std::cout << std::endl;
+        std::cout << ";" << std::endl;
     }
 
     static void print_array(const parameters_t& parameters, int& index, const std::string& name, const int count)
@@ -270,7 +273,7 @@ namespace baryonyx
     static void print_array_2d(const parameters_t& parameters, int& index, const std::string& name, const int count1,
                                const int           count2)
     {
-        std::cout << std::format("constexpr score std::array<std::array, {}>, {}> {} = {}", count2, count1, name, '{');
+        std::cout << std::format("constexpr std::array<std::array<packed_score, {}>, {}> {} = {}{}", count2, count1, name, '{', '{');
 
         for (auto i = 0; i < count1; i++)
         {
@@ -287,7 +290,7 @@ namespace baryonyx
             }
             std::cout << "},\n";
         }
-        std::cout << "};\n";
+        std::cout << "}};\n";
     }
 
     void eval::print_parameters(const parameters_t& parameters)
@@ -325,9 +328,9 @@ namespace baryonyx
     {
         const position pos(fen);
         EvalResult     result;
-
-        result.score        = trace.score = evaluate(pos);
-        result.coefficients = get_coefficients(trace);
+        const auto     trace = evaluate(pos);
+        result.score         = trace.score;
+        result.coefficients  = get_coefficients(trace);
 
         return result;
     }

@@ -7,7 +7,7 @@
 
 using TuneEval = baryonyx::eval;
 
-constexpr int32_t data_load_thread_count = 4;
+constexpr int32_t data_load_thread_count = 6;
 constexpr int32_t thread_count = 12;
 
 #endif // CONFIG_H

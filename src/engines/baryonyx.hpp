@@ -16,7 +16,7 @@ namespace baryonyx
         static constexpr bool   includes_additional_score    = true;
         static constexpr bool   supports_external_chess_eval = false;
         static constexpr bool   retune_from_zero             = true;
-        static constexpr tune_t preferred_k                  = 2.0;
+        static constexpr tune_t preferred_k                  = 2.8;
         static constexpr i32    max_epoch                    = 5000;
         static constexpr bool   enable_qsearch               = false;
         static constexpr bool   filter_in_check              = false;
