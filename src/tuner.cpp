@@ -491,7 +491,7 @@ chess::Board quiescence_root(const parameters_t& parameters, chess::Board board)
     {
         score = -score;
     }
-    if constexpr (print_data_entries)
+    if constexpr (TuneEval::print_data_entries)
     {
         if (pv_table[0].length > 0)
         {
@@ -514,7 +514,7 @@ chess::Board quiescence_root(const parameters_t& parameters, chess::Board board)
 
 static void parse_fen(const bool side_to_move_wdl, const parameters_t& parameters, vector<Entry>& entries, const string& original_fen)
 {
-    if constexpr (print_data_entries)
+    if constexpr (TuneEval::print_data_entries)
     {
         cout << original_fen;
     }
@@ -562,7 +562,7 @@ static void parse_fen(const bool side_to_move_wdl, const parameters_t& parameter
     if constexpr (TuneEval::includes_additional_score)
     {
         const tune_t score = linear_eval(entry, parameters);
-        if constexpr (print_data_entries)
+        if constexpr (TuneEval::print_data_entries)
         {
             cout << " Eval: " << score << endl;
         }

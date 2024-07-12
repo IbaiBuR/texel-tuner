@@ -10,7 +10,7 @@
 using tune_t = double;
 
 #if TAPERED
-using pair_t = std::array<tune_t, 2>;
+using pair_t       = std::array<tune_t, 2>;
 using parameters_t = std::vector<pair_t>;
 #else
 using parameters_t = std::vector<tune_t>;
@@ -21,8 +21,8 @@ using coefficients_t = std::vector<int16_t>;
 struct EvalResult
 {
     coefficients_t coefficients;
-    tune_t score;
-    tune_t endgame_scale = 1;
+    tune_t         score;
+    tune_t         endgame_scale = 1;
 };
 
 #if TAPERED
@@ -57,14 +57,14 @@ constexpr int32_t S(const int32_t mg, const int32_t eg)
 template<typename T>
 void get_initial_parameter_single(parameters_t& parameters, const T& parameter)
 {
-#if TAPERED
-    const auto mg = mg_score(static_cast<int32_t>(parameter));
-    const auto eg = eg_score(static_cast<int32_t>(parameter));
-    const pair_t pair = { mg, eg };
+    #if TAPERED
+    const auto   mg   = mg_score(static_cast<int32_t>(parameter));
+    const auto   eg   = eg_score(static_cast<int32_t>(parameter));
+    const pair_t pair = {static_cast<double>(mg), static_cast<double>(eg)};
     parameters.push_back(pair);
-#else
+    #else
     parameters.push_back(static_cast<tune_t>(parameter));
-#endif
+    #endif
 }
 
 template<typename T>
